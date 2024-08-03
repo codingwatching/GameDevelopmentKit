@@ -7,22 +7,22 @@ using SimpleJSON;
 
 namespace ET
 {
-    public static class GenerateUGFEntityId
+    public static class GenerateUGFSceneId
     {
-        private static readonly string s_LubanEntityAsset = Path.GetFullPath("../Unity/Assets/Res/Editor/Luban/dtentity.json");
+        private static readonly string s_LubanSceneAsset = Path.GetFullPath("../Unity/Assets/Res/Editor/Luban/dtscene.json");
 
         public static void GenerateCode()
         {
             if (ExcelExporter.ExcelExporter_Luban.IsEnableET)
             {
-                GenerateCS("ET.Client", "UGFEntityId",
-                    Path.GetFullPath("../Unity/Assets/Scripts/Game/ET/Code/ModelView/Client/Generate/UGF/UGFEntityId.cs"));
+                GenerateCS("ET.Client", "UGFSceneId",
+                    Path.GetFullPath("../Unity/Assets/Scripts/Game/ET/Code/ModelView/Client/Generate/UGF/UGFSceneId.cs"));
             }
 
             if (ExcelExporter.ExcelExporter_Luban.IsEnableGameHot)
             {
-                GenerateCS("Game.Hot", "EntityId",
-                    Path.GetFullPath("../Unity/Assets/Scripts/Game/Hot/Code/Runtime/Generate/UGF/EntityId.cs"));
+                GenerateCS("Game.Hot", "SceneId",
+                    Path.GetFullPath("../Unity/Assets/Scripts/Game/Hot/Code/Runtime/Generate/UGF/SceneId.cs"));
             }
         }
         
@@ -30,23 +30,23 @@ namespace ET
         {
             if (string.IsNullOrEmpty(nameSpaceName))
             {
-                throw new Exception($"Generate UGFEntityId code fail, namespace is empty.");
+                throw new Exception($"Generate UGFSceneId code fail, namespace is empty.");
             }
             if (string.IsNullOrEmpty(className))
             {
-                throw new Exception($"Generate UGFEntityId code fail, class name is empty.");
+                throw new Exception($"Generate UGFSceneId code fail, class name is empty.");
             }
             if (string.IsNullOrEmpty(codeFile))
             {
-                throw new Exception($"Generate UGFEntityId code fail, code file is empty.");
+                throw new Exception($"Generate UGFSceneId code fail, code file is empty.");
             }
             
-            JSONNode jsonNode = JSONNode.Parse(File.ReadAllText(s_LubanEntityAsset));
-            List<DREntity> drEntities = new List<DREntity>();
+            JSONNode jsonNode = JSONNode.Parse(File.ReadAllText(s_LubanSceneAsset));
+            List<DRScene> drScenes = new List<DRScene>();
             foreach (var childNode in jsonNode.Children)
             {
-                DREntity drEntity = DREntity.LoadJsonDREntity(childNode);
-                drEntities.Add(drEntity);
+                DRScene drScene = DRScene.LoadJsonDRScene(childNode);
+                drScenes.Add(drScene);
             }
 
             StringBuilder stringBuilder = new();
@@ -55,22 +55,22 @@ namespace ET
             stringBuilder.AppendLine($"namespace {nameSpaceName}");
             stringBuilder.AppendLine("{");
             stringBuilder.AppendLine("    /// <summary>");
-            stringBuilder.AppendLine("    /// 实体编号");
+            stringBuilder.AppendLine("    /// 场景编号");
             stringBuilder.AppendLine("    /// </summary>");
             stringBuilder.AppendLine($"    public static class {className}");
             stringBuilder.AppendLine("    {");
             stringBuilder.AppendLine("        public const int Undefined = 0;");
-            foreach (DREntity drEntity in drEntities)
+            foreach (DRScene drScene in drScenes)
             {
-                if (string.IsNullOrEmpty(drEntity.CSName))
+                if (string.IsNullOrEmpty(drScene.CSName))
                 {
-                    throw new Exception($"UGFEntityId {drEntity.Id} CSName is empty!");
+                    throw new Exception($"UGFSceneId {drScene.Id} CSName is empty!");
                 }
                 stringBuilder.AppendLine("");
                 stringBuilder.AppendLine("        /// <summary>");
-                stringBuilder.AppendLine($"        /// {drEntity.Desc}");
+                stringBuilder.AppendLine($"        /// {drScene.Desc}");
                 stringBuilder.AppendLine("        /// </summary>");
-                stringBuilder.AppendLine($"        public const int {drEntity.CSName} = {drEntity.Id};");
+                stringBuilder.AppendLine($"        public const int {drScene.CSName} = {drScene.Id};");
             }
 
             stringBuilder.AppendLine("    }");
